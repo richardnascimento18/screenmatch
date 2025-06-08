@@ -1,8 +1,6 @@
 package br.com.alura.screenmatch;
 
-import br.com.alura.screenmatch.models.SeriesData;
-import br.com.alura.screenmatch.services.ConsumeApi;
-import br.com.alura.screenmatch.services.ConvertData;
+import br.com.alura.screenmatch.main.Main;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,10 +15,7 @@ public class ScreenmatchApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		var consumeApi = new ConsumeApi();
-		var json = consumeApi.getData("http://www.omdbapi.com/?t=gilmore+girls&apikey=e739aba9");
-		ConvertData convertData = new ConvertData();
-		SeriesData data = convertData.getData(json, SeriesData.class);
-		System.out.println(data);
+		Main main = new Main();
+		main.showMenu();
 	}
 }
