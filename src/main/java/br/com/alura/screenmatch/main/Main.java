@@ -1,13 +1,19 @@
 package br.com.alura.screenmatch.main;
 
+import br.com.alura.screenmatch.models.Episode;
+import br.com.alura.screenmatch.models.EpisodeData;
 import br.com.alura.screenmatch.models.SeasonData;
 import br.com.alura.screenmatch.models.SeriesData;
 import br.com.alura.screenmatch.services.ConsumeApi;
 import br.com.alura.screenmatch.services.ConvertData;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Main {
     private Scanner reader = new Scanner(System.in);
@@ -36,5 +42,45 @@ public class Main {
 		seasons.forEach(System.out::println);
 
         seasons.forEach(s -> s.episodes().forEach(e -> System.out.println((e.title()))));
+
+//        Stream Example
+//        List<String> names = Arrays.asList("Jacque", "Iasmin", "Paulo", "Rodrigo", "Nico");
+//
+//        names.stream()
+//                .sorted()
+//                .forEach(System.out::println);
+
+        List<EpisodeData> episodesData = seasons.stream()
+                .flatMap(s -> s.episodes().stream())
+                .collect(Collectors.toList());
+
+        System.out.println("Top 5 Episodes:");
+        episodesData.stream()
+                .filter(e -> !e.rating().equalsIgnoreCase("N/A"))
+                .sorted(Comparator.comparing(EpisodeData::rating).reversed())
+                .limit(5)
+                .forEach(System.out::println);
+
+        List<Episode> episodes = seasons.stream()
+                .flatMap(s -> s.episodes().stream()
+                        .map(e -> new Episode(s.number(), e))
+                ).collect(Collectors.toList());
+
+        episodes.forEach(System.out::println);
+
+        System.out.println("In what range of time do you wish to list the episodes?");
+        var year = reader.nextInt();
+        reader.nextLine();
+
+        LocalDate searchDate = LocalDate.of(year, 1, 1);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        episodes.stream()
+                .filter(e -> e.getLaunch_date() != null && e.getLaunch_date().isAfter(searchDate))
+                .forEach(e -> System.out.println(
+                        "Season: " + e.getSeason() +
+                                " Episode: " + e.getTitle() +
+                                " Launch Date: " + e.getLaunch_date().format(formatter)
+                ));
     }
 }
