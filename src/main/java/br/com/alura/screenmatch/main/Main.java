@@ -9,10 +9,7 @@ import br.com.alura.screenmatch.services.ConvertData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -54,11 +51,16 @@ public class Main {
                 .flatMap(s -> s.episodes().stream())
                 .collect(Collectors.toList());
 
-        System.out.println("Top 5 Episodes:");
+        System.out.println("\nTop 10 Episodes:");
         episodesData.stream()
                 .filter(e -> !e.rating().equalsIgnoreCase("N/A"))
+                .peek(e -> System.out.println("First Filter(N/A)" + e))
                 .sorted(Comparator.comparing(EpisodeData::rating).reversed())
-                .limit(5)
+                .peek(e -> System.out.println("Sorting " + e))
+                .limit(10)
+                .peek(e -> System.out.println("Limit " + e))
+                .map(e -> e.title().toUpperCase())
+                .peek(e -> System.out.println("Mapping " + e))
                 .forEach(System.out::println);
 
         List<Episode> episodes = seasons.stream()
@@ -67,6 +69,19 @@ public class Main {
                 ).collect(Collectors.toList());
 
         episodes.forEach(System.out::println);
+
+        System.out.println("What episode are you looking for?");
+        var title = reader.nextLine();
+        Optional<Episode> searchedEpisode = episodes.stream()
+                .filter(e -> e.getTitle().toUpperCase().contains(title.toUpperCase()))
+                .findFirst();
+                // .isPresent(System.out::println);
+
+        if(searchedEpisode.isPresent()) {
+            System.out.println("Episode Found: " + searchedEpisode.get());
+        } else {
+            System.out.println("Episode Not Found!");
+        }
 
         System.out.println("In what range of time do you wish to list the episodes?");
         var year = reader.nextInt();
