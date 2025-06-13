@@ -97,5 +97,20 @@ public class Main {
                                 " Episode: " + e.getTitle() +
                                 " Launch Date: " + e.getLaunch_date().format(formatter)
                 ));
+
+
+        Map<Integer, Double> ratingPerSeason = episodes.stream()
+                .filter(e -> e.getEpisodeRating() > 0.0)
+                .collect(Collectors.groupingBy(Episode::getSeason, Collectors.averagingDouble(Episode::getEpisodeRating)));
+        System.out.println(ratingPerSeason);
+
+        DoubleSummaryStatistics statistics = episodes.stream()
+                .filter(e -> e.getEpisodeRating() > 0.0)
+                .collect(Collectors.summarizingDouble(Episode::getEpisodeRating));
+
+        System.out.println("Average: " + statistics.getAverage());
+        System.out.println("Best Episode: " + statistics.getMax());
+        System.out.println("Worst Episode: " + statistics.getMin());
+        System.out.println("Quantity: " + statistics.getCount());
     }
 }
